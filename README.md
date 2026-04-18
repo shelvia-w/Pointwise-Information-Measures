@@ -26,7 +26,6 @@ This project is organized around three research questions:
 project_root/
   README.md
   requirements.txt
-  .gitignore
 
   configs/
     base_config.py
