@@ -2,7 +2,7 @@
 
 This is the code repository for the paper "Pointwise Information Measures as Confidence Estimators in Deep Neural Networks: A Comparative Study" published in ICML 2025.
 
-Read the blog here:
+Read the blog here: https://shelvia-w.github.io/Pointwise-Information-Measures/
 
 The current codebase focuses on reproducible Python experiments for:
 
@@ -68,8 +68,8 @@ This project studies three pointwise information measures:
 
 The repository includes implementations for estimating these measures and evaluating them as confidence scores on trained image classifiers. The experiments cover both:
 - Failure prediction
--- misclassification detection
-- selective prediction
+  - misclassification detection
+  - selective prediction
 -- Confidence calibration
 
 ## Dataset Notes
