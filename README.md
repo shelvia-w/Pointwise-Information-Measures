@@ -6,10 +6,19 @@ Read the blog here:
 
 The current codebase focuses on reproducible Python experiments for:
 
+- computing PMI, PSI, and PVI as confidence estimators,
+- evaluating failure prediction and confidence calibration,
+- benchmarking across standard vision datasets and architectures,
+- comparing against standard post-hoc confidence baselines.
+
 
 ## Research Questions
 
-This project is organized around these research questions:
+This project is organized around three research questions:
+
+- Can pointwise information measures provide better confidence estimates than standard post-hoc baselines?
+- How do PMI, PSI, and PVI compare for failure prediction tasks such as misclassification detection and selective prediction?
+- How well do these measures perform for confidence calibration?
 
 ## Repository Structure
 
@@ -53,12 +62,16 @@ project_root/
 ```
 
 ## Method Overview
-This project considers three pointwise information measures:
-1. Pointwise Mutual Information (PMI)
-2. Pointwise Sliced Mutual Information (PSI)
-3. Pointwise V-Information (PVI)
+This project studies three pointwise information measures:
+1. PMI — measures the pointwise association between features and labels.
+2. PSI — a sliced variant of PMI designed to scale better in high dimensions.
+3. PVI — measures usable predictive information under a restricted predictive family.
 
-The implementation supports:
+The repository includes implementations for estimating these measures and evaluating them as confidence scores on trained image classifiers. The experiments cover both:
+- Failure prediction
+-- misclassification detection
+- selective prediction
+-- Confidence calibration
 
 ## Dataset Notes
 
@@ -121,12 +134,15 @@ python scripts/main.py umap --benchmark mlp_mnist
 
 ## Reproducibility Notes
 
-- 
+- Results in the paper are averaged over multiple runs.
+- All confidence methods are evaluated in a post-hoc setting.
+- Temperature scaling is used where appropriate for fair comparison across methods.
+- PMI is omitted for some very large-class benchmarks due to computational cost.
 
 ## Citation
 
 ```bibtex
-@article{placeholder_pointwise_information_measures,
+@article{wongso2025pointwise,
   title   = {Pointwise Information Measures as Confidence Estimators in Deep Neural Networks: A Comparative Study},
   author  = {Wongso, Shelvia and Ghosh, Rohan and Motani, Mehul},
   journal = {Proceedings of the 42nd International Conference on Machine Learning},
