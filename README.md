@@ -141,7 +141,7 @@ python scripts/main.py umap --benchmark mlp_mnist
 ## Citation
 
 ```bibtex
-@article{wongso2025pointwise,
+@inproceedings{wongso2025pointwise,
   title   = {Pointwise Information Measures as Confidence Estimators in Deep Neural Networks: A Comparative Study},
   author  = {Wongso, Shelvia and Ghosh, Rohan and Motani, Mehul},
   journal = {Proceedings of the 42nd International Conference on Machine Learning},
