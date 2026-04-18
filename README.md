@@ -70,7 +70,7 @@ The repository includes implementations for estimating these measures and evalua
 - Failure prediction
   - misclassification detection
   - selective prediction
--- Confidence calibration
+- Confidence calibration
 
 ## Dataset Notes
 
@@ -146,6 +146,6 @@ python scripts/main.py umap --benchmark mlp_mnist
   author  = {Wongso, Shelvia and Ghosh, Rohan and Motani, Mehul},
   journal = {Proceedings of the 42nd International Conference on Machine Learning},
   year    = {2025},
-  url = {https://proceedings.mlr.press/v206/wongso23a.html}
+  url = {https://proceedings.mlr.press/v267/wongso25a.html}
 }
 ```

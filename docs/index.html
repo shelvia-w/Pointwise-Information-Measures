@@ -236,6 +236,41 @@
       background: var(--accent);
     }
 
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.98rem;
+      line-height: 1.5;
+      color: #1f2937;
+    }
+
+    .results-table th,
+    .results-table td {
+      padding: 0.9rem 1rem;
+      text-align: left;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .results-table th {
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .results-table td {
+      color: #374151;
+    }
+
+    .highlight-row {
+      background: rgba(199, 243, 107, 0.18);
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1.25rem;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -313,18 +348,18 @@
 <body>
   <main class="container">
     <header>
-      <h1>Using Sliced Mutual Information to<br/>
-         Study Memorization and Generalization<br/>
-         in Deep Neural Networks</h1>
+      <h1>Pointwise Information Measures as Confidence <br/>
+         Estimators in Deep Neural Networks:<br/>
+          A Comparative Study</h1>
       <p class="authors">Shelvia Wongso, Rohan Ghosh, Mehul Motani</p>
-      <p class="affiliation">AISTATS 2023 (Oral)</p>
+      <p class="affiliation">ICML 2025</p>
       <p class="summary">
-        This paper uses Sliced Mutual Information (SMI) to analyze the memorization and generalization behaviors of deep neural networks (DNNs).
+        This paper provides a comparative study of three pointwise information measures as post-hoc confidence estimators in deep neural networks.
       </p>
       <nav class="links" aria-label="Paper links">
-        <a class="button primary" href="https://proceedings.mlr.press/v206/wongso23a.html">Paper</a>
-        <a class="button" href="https://proceedings.mlr.press/v206/wongso23a/wongso23a.pdf">PDF</a>
-        <a class="button" href="https://github.com/shelvia-w/SMI-DNN">Code</a>
+        <a class="button primary" href="https://proceedings.mlr.press/v267/wongso25a.html">Paper</a>
+        <a class="button" href="https://raw.githubusercontent.com/mlresearch/v267/main/assets/wongso25a/wongso25a.pdf">PDF</a>
+        <a class="button" href="https://github.com/shelvia-w/Pointwise-Information-Measures">Code</a>
         <a class="button" href="#citation">Citation</a>
       </nav>
     </header>
@@ -333,92 +368,301 @@
       <h2 id="overview-title">Overview</h2>
       <div class="section-text">
         <p>
-          Deep neural networks generalize remarkably well across many tasks. Yet it remains unclear what their internal representations capture and how these representations relate to memorization and generalization.
+          Reliable confidence estimation is essential for deploying deep neural networks in high-stakes settings. Standard softmax confidence is widely used, but it is often miscalibrated and can be unreliable for failure prediction.
         </p>
         <p>
-          The paper proposes to study this using Sliced Mutual Information (SMI), introduced by Goldfeld and Greenewald (2021), as an alternative to standard mutual information (MI) for analyzing high-dimensional random variables. By averaging MI estimates across many random projections, SMI provides a more scalable way to quantify dependence in high-dimensional settings.
+          The paper proposes to study three pointwise information (PI) measures as post-hoc confidence estimators: Pointwise Mutual Information (PMI), Pointwise Sliced Mutual Information (PSI), and Pointwise $\mathcal{V}$-Information (PVI). These measures are theoretically grounded in their relevance to predictive uncertainty, with properties such as invariance, convergence rates, and sensitivity to geometric attributes like margin and intrinsic dimensionality.
         </p>
+
       <p>
         In this paper, we:
         <ul class="small-list">
-          <li>analyze label information across layers and epochs,</li>
-          <li>study how SMI relates to memorization,</li>
-          <li>study how SMI correlates with the generalization gap, and</li>
-          <li>relate SMI to margin and intrinsic dimensionality.</li>
+          <li>study the theoretical properties of the three PI measures, including invariance properties, convergence rates, and geometric characteristics (margin and intrinsic dimensionality), and</li>
+          <li>evaluate the three PI measures for both failure prediction and confidence estimation tasks across a diverse range of datasets and architectures.</li>
         </ul>
       </p>
       </div>
     </section>
 
-    <section id="smi" aria-labelledby="smi-title">
+    <section id="pointwise" aria-labelledby="pointwise-title">
       <div>
-        <h2 id="smi-title">Sliced Mutual Information</h2>
+        <h2 id="pointwise-title">Pointwise Information Measures</h2>
+
+        <h3 id="layer-wise-title">1. Pointwise Mutual Information (PMI)</h3>
         <p class="section-text">
-          Sliced Mutual Information (SMI) is defined as the average mutual information between one-dimensional random projections of two random variables:
+          PMI measures how strongly a specific feature-label pair \((x,y)\) is associated, relative to what would be expected if \(x\) and \(y\) were independent. It is defined as:
         </p>
 
         <p>
           $$
-          \mathrm{SI}(X;Y)
-          := I(\Theta^\top X;\Phi^\top Y \mid \Theta,\Phi)
-          = \frac{1}{S_{d_x-1}S_{d_y-1}}
-          \int_{\mathbb{S}^{d_x-1}} \int_{\mathbb{S}^{d_y-1}}
-          I(\theta^\top X;\phi^\top Y)\, d\theta\, d\phi.
+          pmi(x;y) := \log \frac{p(x,y)}{p(x)p(y)}
           $$
         </p>
       </div>
 
-      <p class="section-text">
-        In the experiments, SMI is computed between the hidden representations $(X)$ and the labels $(Y)$.
-      </p>
+      <h3 id="layer-wise-title">2. Pointwise Sliced Mutual Information (PSI)</h3>
+        <p class="section-text">
+          PSI measures the association between \(x\) and \(y\) through random one-dimensional projections, giving a more scalable approximation in high-dimensional settings. It is defined as:
+        </p>
+
+        <p>
+          $$
+          psi(x;y) := \mathbb{E}_{\substack{\theta\in\Theta, \\ \phi\in\Phi}} \left[ pmi(\theta^T x; \phi^T y) \right]
+          $$
+        </p>
+      </div>
+
+      <h3 id="layer-wise-title">3. Pointwise $\mathcal{V}$-Information (PVI)</h3>
+        <p class="section-text">
+          PVI measures how much more predictable the label \(y\) becomes from the input \(x\),
+          relative to a null input, under a predictive family \(\mathcal{V}\). It is defined as:
+        </p>
+        <p>
+          $$
+          pvi(x \to y) := -\log g[\varnothing](y) + \log g'[x](y)
+          $$
+        </p>
+      </div>
+
+      For PVI, we compute it between the input \(x\) and the predicted label \(y\) by training a separate model with the same architecture. This reflects how well the predictive family can infer the label directly from the input. In contrast, PMI and PSI are computed between the model’s output-layer features \(x\) and the predicted label \(y\), since these features more directly capture the network’s confidence.
+
     </section>
 
     <section id="results" aria-labelledby="results-title">
       <h2 id="results-title">Results</h2>
 
-      <h3 id="layer-wise-title">1. Layer-wise training dynamics</h3>
+      <h3 id="failure-prediction-title">1. Failure Prediction</h3>
       <p class="section-text">
-        The first result examines how SMI changes across network depth and training epochs. Across different architectures and datasets, SMI is low at initialization and increases more strongly in deeper layers as training progresses, indicating that later representations become increasingly informative about the labels.
+        The first result evaluates failure prediction, asking whether a confidence score can distinguish correct predictions from errors. Across different models and datasets, PVI consistently achieves the strongest overall performance, with higher AUROC and AUPR and lower FPR95 and E-AURC than the other pointwise information measures and standard confidence baselines.
       </p>
-      <figure class="result-figure">
-        <img src="./result_1.PNG" alt="SMI across layers for MLP on MNIST, CNN on CIFAR10, and VGG16 on CIFAR100 at different training epochs.">
-        <figcaption>
-          SMI across layers at different training epochs for different model–dataset pairs. In general, SMI increases with network depth during training.
 
-        </figcaption>
-      </figure>
+      <div class="table-wrapper">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Model / Dataset</th>
+              <th>Method</th>
+              <th>AUROC ↑</th>
+              <th>AUPR (Error) ↑</th>
+              <th>FPR95 ↓</th>
+              <th>E-AURC ↓</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="4">CNN / Fashion MNIST</td>
+              <td>MSP</td>
+              <td>92.53</td>
+              <td>44.71</td>
+              <td>46.94</td>
+              <td>5.72</td>
+            </tr>
+            <tr>
+              <td>PMI</td>
+              <td>91.38</td>
+              <td>42.37</td>
+              <td>48.95</td>
+              <td>6.99</td>
+            </tr>
+            <tr>
+              <td>PSI</td>
+              <td>89.95</td>
+              <td>36.28</td>
+              <td>56.76</td>
+              <td>8.02</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>PVI</strong></td>
+              <td><strong>92.98</strong></td>
+              <td><strong>50.01</strong></td>
+              <td><strong>43.26</strong></td>
+              <td><strong>5.38</strong></td>
+            </tr>
+            <tr>
+              <td rowspan="4">VGG16 / STL-10</td>
+              <td>MSP</td>
+              <td>92.04</td>
+              <td>50.75</td>
+              <td>48.21</td>
+              <td>7.93</td>
+            </tr>
+            <tr>
+              <td>PMI</td>
+              <td>91.46</td>
+              <td>49.48</td>
+              <td>49.12</td>
+              <td>8.66</td>
+            </tr>
+            <tr>
+              <td>PSI</td>
+              <td>91.79</td>
+              <td>50.78</td>
+              <td>47.70</td>
+              <td>8.29</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>PVI</strong></td>
+              <td><strong>92.79</strong></td>
+              <td><strong>55.88</strong></td>
+              <td><strong>41.97</strong></td>
+              <td><strong>7.18</strong></td>
+            </tr>
 
-      <h3 id="label-noise-title">2. Behavior under label noise</h3>
+            <tr>
+              <td rowspan="4">ResNet50 / CIFAR-10</td>
+              <td>MSP</td>
+              <td>93.59</td>
+              <td>43.42</td>
+              <td>36.29</td>
+              <td>3.52</td>
+            </tr>
+            <tr>
+              <td>PMI</td>
+              <td>93.11</td>
+              <td>43.51</td>
+              <td>37.43</td>
+              <td>3.87</td>
+            </tr>
+            <tr>
+              <td>PSI</td>
+              <td>93.51</td>
+              <td>43.27</td>
+              <td>37.44</td>
+              <td>3.57</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>PVI</strong></td>
+              <td><strong>95.14</strong></td>
+              <td><strong>60.99</strong></td>
+              <td><strong>25.77</strong></td>
+              <td><strong>2.72</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="calibration-title">2. Confidence Calibration</h3>
         <p class="section-text">
-          The second result studies how SMI evolves under different levels of label corruption. When there is no label noise, SMI rises and remains high, particularly in deeper layers. In the presence of label noise, all the hidden layers experience an increase in SMI first before decreasing. This may indicate that the networks learn relevant and generalizable features first before proceeding to memorize.  Furthermore, we observe that the SMI of deeper layers drop more compared to the earlier layers when the network is memorizing. 
+          The second result  evaluates confidence calibration, asking whether a confidence score matches the true likelihood of correctness. Across different models and datasets, PVI remains competitive and often performs among the strongest
+          methods, showing that its gains in failure prediction do not come at the expense of calibration.
         </p>
-        <figure class="result-figure">
-          <img src="./result_2.PNG" alt="SMI over training epochs for different layers under label noise ratios 0, 0.2, and 0.4.">
-          <figcaption>
-            SMI across layers in a 5-layer MLP trained on MNIST for 50 epochs under different label noise ratios. As label noise increases, SMI decreases, especially in deeper layers.
-          </figcaption>
-        </figure>
+        
+        <div class="table-wrapper">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Model / Dataset</th>
+                <th>Method</th>
+                <th>SCE ↓</th>
+                <th>CC-SCE ↓</th>
+                <th>Ada-SCE ↓</th>
+                <th>RMS-SCE ↓</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="4">CNN / Fashion-MNIST</td>
+                <td>MSP</td>
+                <td>0.15</td>
+                <td>0.35</td>
+                <td>0.07</td>
+                <td>0.52</td>
+              </tr>
+              <tr>
+                <td>PMI</td>
+                <td>0.23</td>
+                <td>0.58</td>
+                <td>0.06</td>
+                <td>0.93</td>
+              </tr>
+              <tr>
+                <td>PSI</td>
+                <td>0.15</td>
+                <td>0.57</td>
+                <td>0.08</td>
+                <td>0.52</td>
+              </tr>
+              <tr class="highlight-row">
+                <td><strong>PVI</strong></td>
+                <td><strong>0.14</strong></td>
+                <td><strong>0.34</strong></td>
+                <td>0.07</td>
+                <td><strong>0.50</strong></td>
+              </tr>
 
-      <h3 id="generalization-title">3. Connection to generalization</h3>
-      <p class="section-text">
-        The third result shows a consistent relationship between SMI and generalization gap across multiple models and datasets. In all cases, larger SMI values are associated with smaller generalization gaps, supporting the theoretical connection between SMI and margin as well as intrinsic dimensionality.
-      </p>
-      <figure class="result-figure">
-        <img src="./result_3.PNG" alt="Scatter plots showing relationship between SMI and generalization gap across several models and datasets.">
-        <figcaption>
-          The generalization gap vs SMI between the penultimate layer and labels across different model–dataset pairs. In general, higher SMI values correspond to smaller generalization gaps.
-        </figcaption>
-      </figure>
+              <tr>
+                <td rowspan="4">VGG16 / STL-10</td>
+                <td>MSP</td>
+                <td>0.28</td>
+                <td><strong>0.59</strong></td>
+                <td><strong>0.12</strong></td>
+                <td>0.94</td>
+              </tr>
+              <tr>
+                <td>PMI</td>
+                <td>0.23</td>
+                <td>0.65</td>
+                <td>0.16</td>
+                <td>0.82</td>
+              </tr>
+              <tr>
+                <td>PSI</td>
+                <td>0.22</td>
+                <td>0.67</td>
+                <td>0.15</td>
+                <td>0.72</td>
+              </tr>
+              <tr class="highlight-row">
+                <td><strong>PVI</strong></td>
+                <td><strong>0.20</strong></td>
+                <td>0.61</td>
+                <td><strong>0.12</strong></td>
+                <td><strong>0.68</strong></td>
+              </tr>
+
+              <tr>
+                <td rowspan="4">ResNet50 / CIFAR-10</td>
+                <td>MSP</td>
+                <td>0.19</td>
+                <td>0.35</td>
+                <td><strong>0.03</strong></td>
+                <td>0.88</td>
+              </tr>
+              <tr>
+                <td>PMI</td>
+                <td><strong>0.15</strong></td>
+                <td>0.39</td>
+                <td>0.04</td>
+                <td><strong>0.74</strong></td>
+              </tr>
+              <tr>
+                <td>PSI</td>
+                <td>0.17</td>
+                <td>0.35</td>
+                <td>0.04</td>
+                <td>0.85</td>
+              </tr>
+              <tr class="highlight-row">
+                <td><strong>PVI</strong></td>
+                <td>0.17</td>
+                <td><strong>0.33</strong></td>
+                <td><strong>0.03</strong></td>
+                <td>0.85</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
     </section>
 
     <section id="citation" aria-labelledby="citation-title">
       <h2 id="citation-title">Citation</h2>
       <pre><code>@inproceedings{wongso2023smi,
-  title = {Using Sliced Mutual Information to Study Memorization and Generalization in Deep Neural Networks},
+  title = {Pointwise Information Measures as Confidence Estimators in Deep Neural Networks: A Comparative Study},
   author = {Wongso, Shelvia and Ghosh, Rohan and Motani, Mehul},
-  booktitle = {Proceedings of The 26th International Conference on Artificial Intelligence and Statistics},
-  year = {2023},
-  url = {https://proceedings.mlr.press/v206/wongso23a.html}
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning},
+  year = {2025},
+  url = {https://proceedings.mlr.press/v267/wongso25a.html}
 }</code></pre>
     </section>
   </main>
