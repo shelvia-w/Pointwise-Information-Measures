@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Using Sliced Mutual Information to Study Memorization and Generalization</title>
+  <meta
+    name="description"
+    content="Project page for Using Sliced Mutual Information to Study Memorization and Generalization in Deep Neural Networks."
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fbfaf7;
+      --text: #1f2328;
+      --muted: #68707a;
+      --line: #dedbd3;
+      --accent: #7a4f9a;
+      --panel: #ffffff;
+      --code: #f3f1ec;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "IBM Plex Sans", "Aptos", "Segoe UI", sans-serif;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .container {
+      width: min(880px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 86px 0 58px;
+      text-align: center;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0 auto;
+      font-family: "Source Sans 3", "Aptos", "Segoe UI", sans-serif;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 500;
+      line-height: 1.18;
+      letter-spacing: -0.018em;
+    }
+
+    .authors {
+      margin: 24px auto 0;
+      color: var(--text);
+      font-size: 1.05rem;
+    }
+
+    .affiliation {
+      margin: 6px auto 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .summary {
+      max-width: 700px;
+      margin: 26px auto 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 94px;
+      min-height: 40px;
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .equation-block {
+      padding: 1rem 1.25rem;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow-x: auto;
+      font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif;
+      font-size: 1rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .result-subsection {
+      margin-top: 1.75rem;
+    }
+
+    .result-subsection h3 {
+      margin-bottom: 0.6rem;
+    }
+
+    .result-figure {
+      margin: 1rem 0 2rem;
+    }
+
+    .result-figure img {
+      display: block;
+      width: 100%;
+      max-width: 920px;
+      height: auto;
+      margin: 0.9rem 0 0;
+      border-radius: 16px;
+    }
+
+    .result-figure figcaption {
+      margin-top: 0.75rem;
+      color: #555;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    section {
+      padding: 46px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-family: "IBM Plex Sans", "Aptos", "Segoe UI", sans-serif;
+      font-size: clamp(1.18rem, 2.4vw, 1.45rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    h2::after {
+      content: "";
+      display: block;
+      width: 38px;
+      height: 2px;
+      margin-top: 10px;
+      background: var(--accent);
+    }
+
+    p {
+      margin: 0 0 16px;
+    }
+
+    .section-text {
+      max-width: 900px;
+      color: var(--muted);
+    }
+
+    .figure {
+      margin: 8px 0 0;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+    }
+
+    .figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .caption {
+      margin: 14px auto 0;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-align: center;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .small-list {
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+    }
+
+    .small-list li {
+      margin-bottom: 10px;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .small-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      background: var(--panel);
+      font-size: 0.97rem;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    td {
+      color: var(--muted);
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 20px 0 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--code);
+      color: var(--text);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    footer {
+      padding: 34px 0 56px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        font-size: 16px;
+      }
+
+      header {
+        padding: 58px 0 42px;
+      }
+
+      section {
+        padding: 34px 0;
+      }
+
+      .two-column {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .figure {
+        padding: 16px;
+      }
+
+      .button {
+        flex: 1 1 40%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Using Sliced Mutual Information to<br/>
+         Study Memorization and Generalization<br/>
+         in Deep Neural Networks</h1>
+      <p class="authors">Shelvia Wongso, Rohan Ghosh, Mehul Motani</p>
+      <p class="affiliation">AISTATS 2023 (Oral)</p>
+      <p class="summary">
+        This paper uses Sliced Mutual Information (SMI) to analyze the memorization and generalization behaviors of deep neural networks (DNNs).
+      </p>
+      <nav class="links" aria-label="Paper links">
+        <a class="button primary" href="https://proceedings.mlr.press/v206/wongso23a.html">Paper</a>
+        <a class="button" href="https://proceedings.mlr.press/v206/wongso23a/wongso23a.pdf">PDF</a>
+        <a class="button" href="https://github.com/shelvia-w/SMI-DNN">Code</a>
+        <a class="button" href="#citation">Citation</a>
+      </nav>
+    </header>
+
+    <section id="overview" aria-labelledby="overview-title">
+      <h2 id="overview-title">Overview</h2>
+      <div class="section-text">
+        <p>
+          Deep neural networks generalize remarkably well across many tasks. Yet it remains unclear what their internal representations capture and how these representations relate to memorization and generalization.
+        </p>
+        <p>
+          The paper proposes to study this using Sliced Mutual Information (SMI), introduced by Goldfeld and Greenewald (2021), as an alternative to standard mutual information (MI) for analyzing high-dimensional random variables. By averaging MI estimates across many random projections, SMI provides a more scalable way to quantify dependence in high-dimensional settings.
+        </p>
+      <p>
+        In this paper, we:
+        <ul class="small-list">
+          <li>analyze label information across layers and epochs,</li>
+          <li>study how SMI relates to memorization,</li>
+          <li>study how SMI correlates with the generalization gap, and</li>
+          <li>relate SMI to margin and intrinsic dimensionality.</li>
+        </ul>
+      </p>
+      </div>
+    </section>
+
+    <section id="smi" aria-labelledby="smi-title">
+      <div>
+        <h2 id="smi-title">Sliced Mutual Information</h2>
+        <p class="section-text">
+          Sliced Mutual Information (SMI) is defined as the average mutual information between one-dimensional random projections of two random variables:
+        </p>
+
+        <p>
+          $$
+          \mathrm{SI}(X;Y)
+          := I(\Theta^\top X;\Phi^\top Y \mid \Theta,\Phi)
+          = \frac{1}{S_{d_x-1}S_{d_y-1}}
+          \int_{\mathbb{S}^{d_x-1}} \int_{\mathbb{S}^{d_y-1}}
+          I(\theta^\top X;\phi^\top Y)\, d\theta\, d\phi.
+          $$
+        </p>
+      </div>
+
+      <p class="section-text">
+        In the experiments, SMI is computed between the hidden representations $(X)$ and the labels $(Y)$.
+      </p>
+    </section>
+
+    <section id="results" aria-labelledby="results-title">
+      <h2 id="results-title">Results</h2>
+
+      <h3 id="layer-wise-title">1. Layer-wise training dynamics</h3>
+      <p class="section-text">
+        The first result examines how SMI changes across network depth and training epochs. Across different architectures and datasets, SMI is low at initialization and increases more strongly in deeper layers as training progresses, indicating that later representations become increasingly informative about the labels.
+      </p>
+      <figure class="result-figure">
+        <img src="./result_1.PNG" alt="SMI across layers for MLP on MNIST, CNN on CIFAR10, and VGG16 on CIFAR100 at different training epochs.">
+        <figcaption>
+          SMI across layers at different training epochs for different model–dataset pairs. In general, SMI increases with network depth during training.
+
+        </figcaption>
+      </figure>
+
+      <h3 id="label-noise-title">2. Behavior under label noise</h3>
+        <p class="section-text">
+          The second result studies how SMI evolves under different levels of label corruption. When there is no label noise, SMI rises and remains high, particularly in deeper layers. In the presence of label noise, all the hidden layers experience an increase in SMI first before decreasing. This may indicate that the networks learn relevant and generalizable features first before proceeding to memorize.  Furthermore, we observe that the SMI of deeper layers drop more compared to the earlier layers when the network is memorizing. 
+        </p>
+        <figure class="result-figure">
+          <img src="./result_2.PNG" alt="SMI over training epochs for different layers under label noise ratios 0, 0.2, and 0.4.">
+          <figcaption>
+            SMI across layers in a 5-layer MLP trained on MNIST for 50 epochs under different label noise ratios. As label noise increases, SMI decreases, especially in deeper layers.
+          </figcaption>
+        </figure>
+
+      <h3 id="generalization-title">3. Connection to generalization</h3>
+      <p class="section-text">
+        The third result shows a consistent relationship between SMI and generalization gap across multiple models and datasets. In all cases, larger SMI values are associated with smaller generalization gaps, supporting the theoretical connection between SMI and margin as well as intrinsic dimensionality.
+      </p>
+      <figure class="result-figure">
+        <img src="./result_3.PNG" alt="Scatter plots showing relationship between SMI and generalization gap across several models and datasets.">
+        <figcaption>
+          The generalization gap vs SMI between the penultimate layer and labels across different model–dataset pairs. In general, higher SMI values correspond to smaller generalization gaps.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section id="citation" aria-labelledby="citation-title">
+      <h2 id="citation-title">Citation</h2>
+      <pre><code>@inproceedings{wongso2023smi,
+  title = {Using Sliced Mutual Information to Study Memorization and Generalization in Deep Neural Networks},
+  author = {Wongso, Shelvia and Ghosh, Rohan and Motani, Mehul},
+  booktitle = {Proceedings of The 26th International Conference on Artificial Intelligence and Statistics},
+  year = {2023},
+  url = {https://proceedings.mlr.press/v206/wongso23a.html}
+}</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      Project page for SMI-DNN.
+    </div>
+  </footer>
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+</body>
+</html>
